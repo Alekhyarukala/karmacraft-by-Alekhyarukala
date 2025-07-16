@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>KarmaCraft Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Welcome to KarmaCraft</h2>
+    <p id="karmaPoints">Karma: Loading...</p>
+
+    <button onclick="window.location.href='submit.html'">Submit a Good Deed</button>
+    <h3>Your Deeds</h3>
+    <ul id="deedList"></ul>
+  </div>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Login required!");
+      window.location.href = "index.html";
+    }
+
+    fetch("/dashboard", {
+      method: "GET",
+      headers: {
+        "Authorization": token
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("karmaPoints").innerText = "Karma: " + data.karma;
+
+      const list = document.getElementById("deedList");
+      list.innerHTML = "";
+
+      data.deeds.forEach(deed => {
+        const item = document.createElement("li");
+        item.innerHTML = `
+          <strong>${deed.description}</strong> - Status: <em>${deed.status}</em>
+          ${deed.image ? <br><img src="${deed.image}" width="100" /> : ""}
+          <hr>
+        `;
+        list.appendChild(item);
+      });
+    })
+    .catch(() => {
+      alert("Error loading dashboard");
+    });
+  </script>
+</body>
+</html>

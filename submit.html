@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Submit a Good Deed - KarmaCraft</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Submit a Good Deed</h2>
+    <form id="deedForm" enctype="multipart/form-data">
+      <textarea name="description" placeholder="Describe your good deed..." required></textarea><br><br>
+      <input type="file" name="image" accept="image/*" /><br><br>
+      <button type="submit">Submit</button>
+    </form>
+
+    <br>
+    <button onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
+  </div>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login first.");
+      window.location.href = "index.html";
+    }
+
+    const form = document.getElementById("deedForm");
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+
+      const res = await fetch("/submit", {
+        method: "POST",
+        headers: {
+          "Authorization": token
+        },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert("Deed submitted! Awaiting approval.");
+        window.location.href = "dashboard.html";
+      } else {
+        alert("Error submitting deed.");
+      }
+    };
+  </script>
+</body>
+</html>
